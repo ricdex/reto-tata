@@ -1,0 +1,7 @@
+{
+    "definitions": {},
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "title": "Persona schema",
+    "required": ["anho_nacimiento", "color_ojos", "genero", "color_pelo", "mundo", "masa", "nombre", "color_piel"]
+  }

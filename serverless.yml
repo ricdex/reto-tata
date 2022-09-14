@@ -1,0 +1,55 @@
+org: ricdex
+app: aws-reto-tata
+service: aws-reto-tata-rimac
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - Fn::GetAtt: [ PersonaTable, Arn ]
+
+functions:
+  savePeople:
+    handler: src/handlers/grabarPersona.handler
+    events:
+      - httpApi:
+          method: POST
+          path: /persona
+          request:
+            schema:
+              application/json: ${file(./src/schemas/grabar_persona.json)}
+
+  getPeople:
+    handler: src/handlers/obtenerPersona.handler
+    events:
+      - httpApi: 
+          method: GET
+          path: /persona/{personaId}
+
+resources:
+  Resources:
+    PersonaTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: personaId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: personaId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: "persona"
+plugins:
+  - serverless-offline
